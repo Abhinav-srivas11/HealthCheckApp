@@ -38,7 +38,7 @@ public class HealthCheckUp extends JFrame implements ItemListener {
     public HealthCheckUp() {
 
 
-            f = new JFrame("Health Check App v1.0");
+            f = new JFrame("Reminder App v1.0");
             f.setSize(WIDTH, HEIGHT);
             f.setDefaultCloseOperation(EXIT_ON_CLOSE);
             f.setLocation(1250, 500);
@@ -215,8 +215,8 @@ public class HealthCheckUp extends JFrame implements ItemListener {
     * be passed to this default gif function that will save lines of code and base on the principle DRY*/
 
     private void setDefaultGif(){
-        icon = new ImageIcon("C:\\Users\\91878\\Downloads\\HealthCheckApp\\src\\com\\abhinav\\images\\tenor.gif");
-        Image scaled = icon.getImage().getScaledInstance( 150, 150, Image.SCALE_DEFAULT);
+        icon = new ImageIcon("C:\\Users\\91878\\Downloads\\HealthCheckApp\\src\\com\\abhinav\\images\\reminder.gif");
+        Image scaled = icon.getImage().getScaledInstance( 190, 150, Image.SCALE_DEFAULT);
         icon = new ImageIcon(scaled);
         mediaLabel.setIcon(icon);
     }

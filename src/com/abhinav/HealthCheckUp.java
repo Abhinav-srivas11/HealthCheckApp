@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class HealthCheckUp extends JFrame implements ItemListener {
-    final int WIDTH = 250;
+    final int WIDTH = 270;
     final int HEIGHT = 325;
     Container container;
     boolean timerFlag = false;
@@ -36,9 +36,7 @@ public class HealthCheckUp extends JFrame implements ItemListener {
     java.util.Timer monitorTimer;
     java.util.Timer currentTimeTracker;
     public HealthCheckUp() {
-
-
-            f = new JFrame("Reminder App v1.0");
+            f = new JFrame("Reminder 1.0");
             f.setSize(WIDTH, HEIGHT);
             f.setDefaultCloseOperation(EXIT_ON_CLOSE);
             f.setLocation(1250, 500);
@@ -71,11 +69,8 @@ public class HealthCheckUp extends JFrame implements ItemListener {
             timeIntervalBox.addItemListener(this);
             timeIntervalBox.setSelectedIndex(0);
 
-//            defaultOperation();
-
             reminderButton = new JButton("Remind Me!!!");
             reminderButton.addActionListener( e -> runTheTimer());
-//            reminderButton.addActionListener( e -> waterReminderMethod());
 
             stopReminders = new JButton("Stop Reminder!!");
             stopReminders.addActionListener(pause -> resetALl());
@@ -98,13 +93,12 @@ public class HealthCheckUp extends JFrame implements ItemListener {
         menuPanel.add(timeIntervalBox);
         menuPanel.add(l2);
         menuPanel.add(reminderButton);
-//        menuPanel.add(pauseButton);
         f.revalidate();
         f.add(gifPanel,BorderLayout.NORTH);
         f.add(menuPanel, BorderLayout.CENTER);
     }
 
-    private void defaultOperation(){ // this function is for setting default values
+    private void defaultOperation() throws NullPointerException{ // this function is for setting default values
         currentReminderItem = menuBox.getSelectedItem().toString();
         reminderGif(currentReminderItem);
         currentIntervalString = timeIntervalBox.getSelectedItem().toString();
@@ -113,16 +107,14 @@ public class HealthCheckUp extends JFrame implements ItemListener {
 
     }
 
-    public void itemStateChanged(ItemEvent e){ // this function will change the global variables to our need by listening to changes
+    public void itemStateChanged(ItemEvent e) throws NullPointerException{ // this function will change the global variables to our need by listening to changes
         if(e.getSource() == menuBox || e.getSource() == timeIntervalBox){
-            System.out.println("The user wants a "+menuBox.getSelectedItem().toString()+ " for " + timeIntervalBox.getSelectedItem());
             currentReminderItem = menuBox.getSelectedItem().toString();
             currentIntervalString = timeIntervalBox.getSelectedItem().toString();
         }
     }
 
     private LocalTime currentTime(){
-
         currentTimeTracker = new Timer();
         currentTimeTracker.schedule(new TimerTask() {
             @Override
@@ -141,36 +133,50 @@ public class HealthCheckUp extends JFrame implements ItemListener {
         return (downTime = LocalTime.of(currentTime.getHour(),currentTime.getMinute(), currentTime.getSecond()).plus(currentInterval,ChronoUnit.MINUTES).plus(30, ChronoUnit.SECONDS));
     }
 
-    private void runTheTimer(){
+    private void runTheTimer() {
         defaultOperation();
         timerFlag = true;
         currentTime = LocalTime.now();
-        final LocalTime[] kruKya = {upTime()};
-        final LocalTime[] downKya = {downTime()};
-
         f.setExtendedState(JFrame.ICONIFIED);
 
         monitorTimer = new Timer();
+        //bring up the reminder with below line
+        monitorTimer.scheduleAtFixedRate(new RemindTask(), 0, currentInterval * 60 * 1000);
+        //minimize the application window automatically after delay of 30 seconds
+        monitorTimer.scheduleAtFixedRate(new MinimizeScreenTask(), 0, currentInterval * 60 * 1000 + 30 * 1000);
+    }
+    //below is the earlier logic that we used
+//        monitorTimer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                LocalTime check = currentTime();
+//                if(check.getHour() == showReminder[0].getHour() && check.getMinute() == showReminder[0].getMinute()){
+//                    f.setExtendedState(JFrame.NORMAL);
+//                    reminderGif(currentReminderItem);
+//                    showReminder[0] = upTime();
+//                    f.setAlwaysOnTop(true);
+//                }
+//                if(check.getHour() == hideScreen[0].getHour() && check.getMinute() == hideScreen[0].getMinute() && hideScreen[0].getSecond() == check.getSecond()){
+//                    f.setExtendedState(JFrame.ICONIFIED);
+//                    hideScreen[0] = downTime;
+//                }
+//            }
+//        },0,1000);//period is so that the code runs at delay of 1 sec
 
-        monitorTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                LocalTime check = currentTime();
-                if(check.getHour() == kruKya[0].getHour() && check.getMinute() == kruKya[0].getMinute()){
-                    f.setExtendedState(JFrame.NORMAL);
-                    reminderGif(currentReminderItem);
-                    kruKya[0] = upTime();
-                    f.setAlwaysOnTop(true);
-                }
-                if(check.getHour() == downKya[0].getHour() && check.getMinute() == downKya[0].getMinute() && downKya[0].getSecond() == check.getSecond()){
-                    f.setExtendedState(JFrame.ICONIFIED);
-                    downKya[0] = downTime;
-                }
-            }
-        },0,1000);//period is so that the code runs at delay of 1 sec
+
+    class RemindTask extends TimerTask {
+        public void run() {
+            f.setExtendedState(JFrame.NORMAL);
+            reminderGif(currentReminderItem);
+            f.setAlwaysOnTop(true);
+        }
     }
 
-
+    class MinimizeScreenTask extends TimerTask {
+        public void run() {
+            f.setExtendedState(JFrame.ICONIFIED);
+        }
+    }
 
     private void reminderGif(String item){
         switch(item){
@@ -211,19 +217,21 @@ public class HealthCheckUp extends JFrame implements ItemListener {
             e.printStackTrace();
         }
     }
-    /*I can make a list with all the path for gifs saved already and have only one method that will need the path parameter which can then
-    * be passed to this default gif function that will save lines of code and base on the principle DRY*/
+    /*
+    I can make a list with all the path for gifs saved already and have only one method that will need the path parameter which can then
+    be passed to this default gif function that will save lines of code and base on the principle DRY
+    */
 
-    private void setDefaultGif(){
+    private void setDefaultGif() {
         icon = new ImageIcon("C:\\Users\\91878\\Downloads\\HealthCheckApp\\src\\com\\abhinav\\images\\reminder.gif");
         Image scaled = icon.getImage().getScaledInstance( 190, 150, Image.SCALE_DEFAULT);
         icon = new ImageIcon(scaled);
         mediaLabel.setIcon(icon);
     }
 
-    private void resetALl(){
-        if(timerFlag){
-            currentTimeTracker.cancel();
+    private void resetALl() {
+        if(timerFlag) {
+//            currentTimeTracker.cancel();
             monitorTimer.cancel();
         }
         timerFlag = false;
@@ -232,10 +240,9 @@ public class HealthCheckUp extends JFrame implements ItemListener {
         menuPanel.remove(stopReminders);
         gifAreaText.setText("");
         addAllItems();
-
     }
 
-    private void whenReminding(){
+    private void whenReminding() {
         menuPanel.removeAll();
         menuPanel.add(stopReminders);
         f.add(gifPanel, BorderLayout.CENTER);
